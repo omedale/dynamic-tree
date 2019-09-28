@@ -1,3 +1,6 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  get '/', to: 'trees#create'
+  get '/:tree_id', to: 'trees#tree'
+  get '/:tree_id/parent/:id', to: 'trees#parents'
+  get '/:tree_id/child/:id', to: 'trees#childs'
 end
