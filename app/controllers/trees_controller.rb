@@ -33,6 +33,5 @@ class TreesController < ApplicationController
     tree = Tree.find(params[:tree_id])
     data = JSON.parse(tree.data).deep_symbolize_keys!
     @obj = TreeService.new(data)
-    @obj.build_parent_child_data
   end
 end

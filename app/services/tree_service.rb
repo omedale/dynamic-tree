@@ -13,10 +13,12 @@ class TreeService
   end
 
   def get_parants(id)
+    build_parent_child_data
     @id_data[id.to_i][:parents]
   end
 
   def get_child(id)
+    build_parent_child_data
     @id_data[id.to_i][:childs]
   end
 
