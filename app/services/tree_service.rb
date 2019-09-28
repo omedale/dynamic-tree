@@ -5,20 +5,20 @@ class TreeService
     @id_data = nil
   end
 
-  def build_parent_child_data
+  def build_parent_child_list
     list = build_id_child_parent_list(
                               @tree[:child],
                               @tree[:id]) << get_root
-    @id_data = build_childs_parents(list)
+    build_id_childs_parents(list)
   end
 
   def get_parants(id)
-    build_parent_child_data
+    build_parent_child_list
     @id_data[id.to_i][:parents]
   end
 
   def get_child(id)
-    build_parent_child_data
+    build_parent_child_list
     @id_data[id.to_i][:childs]
   end
 
@@ -31,17 +31,17 @@ class TreeService
       child: @tree[:child].map {|child| child[:id]}
     }
   end
-
-  def build_childs_parents(list)
-    items = Hash.new { |h, k| h[k] = Hash.new }
+  
+  # build list of ids with there childs and parent ids in a Hash
+  def build_id_childs_parents(list)
+    @id_data = Hash.new { |h, k| h[k] = Hash.new }
     list.each do |value|
-      if items.has_key? value[:id]
-        items[value[:id]][:parents].push(*find_parents(list, value))
+      if @id_data.has_key? value[:id]
+        @id_data[value[:id]][:parents].push(*find_parents(list, value))
       else
-        items[value[:id]].merge!({ childs: value[:child], parents: find_parents(list, value) })
+        @id_data[value[:id]].merge!({ childs: value[:child], parents: find_parents(list, value) })
       end
     end
-    items
   end
 
   def find_parents(list, item)
@@ -49,6 +49,7 @@ class TreeService
         .map { |x| x[:parent] }
   end
 
+  # build an array with parent-node data with the tree
   def build_id_child_parent_list(child, parent, list = [])
     child.each do |tree|
       list << {
