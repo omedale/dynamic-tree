@@ -79,7 +79,7 @@ class TreesControllerTest < ActionDispatch::IntegrationTest
     get "/#{@tree.id}/parent/#{6049}"
 
     assert_equal 200, @response.status
-    assert_equal "[6941]", @response.body
+    assert_equal "[6941,1891,1]", @response.body
   end
 
   test "test empty parents" do
