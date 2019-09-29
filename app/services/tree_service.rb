@@ -2,24 +2,25 @@ class TreeService
   attr_reader :tree
   def initialize(tree)
     @tree = tree
-    @id_data = nil
+    @id_details = nil
   end
 
-  def build_parent_child_list
+  # use hash to reconstruct the tree
+  def build_id_hash
     list = build_id_child_parent_list(
                               @tree[:child],
                               @tree[:id]) << get_root
-    build_id_childs_parents(list)
+    build_id_details(list)
   end
 
   def get_parants(id)
-    build_parent_child_list
-    @id_data[id.to_i][:parents]
+    build_id_hash
+    @id_details[id.to_i][:parents]
   end
 
   def get_child(id)
-    build_parent_child_list
-    @id_data[id.to_i][:childs]
+    build_id_hash
+    @id_details[id.to_i][:childs]
   end
 
   private
@@ -31,25 +32,27 @@ class TreeService
       child: @tree[:child].map {|child| child[:id]}
     }
   end
-  
-  # build list of ids with there childs and parent ids in a Hash
-  def build_id_childs_parents(list)
-    @id_data = Hash.new { |h, k| h[k] = Hash.new }
-    list.each do |value|
-      if @id_data.has_key? value[:id]
-        @id_data[value[:id]][:parents].push(*find_parents(list, value))
-      else
-        @id_data[value[:id]].merge!({ childs: value[:child], parents: find_parents(list, value) })
-      end
+
+  def build_id_details(id_child_parent_list)
+    @id_details = Hash.new { |h, k| h[k] = Hash.new }
+    id_child_parent_list.each do |value|
+      @id_details[value[:id]].merge!({
+                                childs: value[:child],
+                                parents: find_ancestor(value, id_child_parent_list)
+                              })
     end
   end
 
-  def find_parents(list, item)
-    list.select { |x| x[:id] == item[:id] && item[:parent] }
-        .map { |x| x[:parent] }
+  def find_ancestor(node, lists, parents = [])
+    unless node[:parent].nil?
+      parents << node[:parent]
+      new_node = lists.find { |x| node[:parent] == x[:id] }
+      find_ancestor(new_node, lists, parents)
+    end    
+    parents
   end
 
-  # build an array with parent-node data with the tree
+  # build list with parent - id data with the tree
   def build_id_child_parent_list(child, parent, list = [])
     child.each do |tree|
       list << {
