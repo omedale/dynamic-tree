@@ -4,15 +4,7 @@ class TreesController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :handle_record_not_found
 
   def create
-    uri = URI.parse('https://random-tree.herokuapp.com/')
-    request = Net::HTTP::Get.new(uri)
-    response = Net::HTTP.start(
-                              uri.host,
-                              uri.port,
-                              :use_ssl => uri.scheme == 'https'
-                            ) { |http| http.request request}
-
-    tree = Tree.new(data: response.body)
+    tree = Tree.new(data: get_tree)
     if tree.save
       render json: { tree_id: tree.id, tree: JSON.parse(tree.data) }, status: :ok
     else
@@ -33,6 +25,17 @@ class TreesController < ApplicationController
   end
 
   private
+
+  def get_tree
+    uri = URI.parse('https://random-tree.herokuapp.com/')
+    request = Net::HTTP::Get.new(uri)
+    response = Net::HTTP.start(
+                              uri.host,
+                              uri.port,
+                              :use_ssl => uri.scheme == 'https'
+                            ) { |http| http.request request}
+    response.body
+  end
 
   def build_tree_data
     tree = Tree.find(params[:tree_id])
