@@ -1,24 +1,30 @@
-# README
+Technology used 
+- ruby '2.6.1'
+- rails '6.0.0'
+- Sqlite (For Develepment database)
+- PostgreSQL (For Production database)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Setup
+Install dependencies
+$ bundle install
 
-Things you may want to cover:
+create database
+$ rails db:create
 
-* Ruby version
+run migration
+$ rails db:migrate
 
-* System dependencies
+Run test
+$ rails test
 
-* Configuration
+Heroku link: https://omedale-d-tree.herokuapp.com
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Endpoints
+1. HTTP GET /:tree_id
+ => Return the saved structure
+2. HTTP GET /:tree_id/parent/:id
+ => Return the list of parents IDs
+3. HTTP GET /:tree_id/child/:id
+ => Return the list of childs
+4. HTTP GET /
+ => Create and Return saved tree
